@@ -1,7 +1,5 @@
 class Point {
     public: //constructor
-        int xCord;
-        int yCord;
         Point(int x, int y) {
             xCord = x;
             yCord = y;
@@ -14,17 +12,23 @@ class Point {
         int getY() {
             return yCord;
         }
+
+    private:
+        int xCord;
+        int yCord;
 };
 
 // Point point1 = Point(0,0);
 Point list[2] = {Point(0,1), Point(1,1)} ;
 
 void Path(Point cords[], Point pInitial, int initial_Direction) { //note that the input points must draw ONLY vertical or horizontal lines
-    for(int i = 0; i < sizeof(cords); i++) { //goes through all the list of cords
-        int deltaX = cords[i].getX() - pInitial.getX();
-        int deltaY = cords[i].getY() - pInitial.getY();
+    int deltaX;
+    int deltaY;
+    int final_Direction;
+    for(int i = 0; i < sizeof(cords) / sizeof(cords[0]); i++) { //goes through all the list of cords
+        deltaX = cords[i].getX() - pInitial.getX();
+        deltaY = cords[i].getY() - pInitial.getY();
 
-        int final_Direction;
         if(deltaX > 0) { //right
             final_Direction = 90;
         } else if(deltaX < 0) { //left
@@ -38,6 +42,7 @@ void Path(Point cords[], Point pInitial, int initial_Direction) { //note that th
         }
 
         //turn in final direction, move
+
     }
 }
 
