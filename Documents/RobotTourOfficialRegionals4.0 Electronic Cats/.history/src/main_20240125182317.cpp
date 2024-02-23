@@ -1,0 +1,99 @@
+#include <Arduino.h>
+#include <vector>
+#include "Movements.h"
+#include "Drivetrain.h"
+#include "Mapping.h"
+
+
+Drivetrain* drivetrain;
+
+int cur_instruction = 0;
+
+
+//Point points[] = {Point(0, 1), Point(1, 1), Point(1, 3), Point(1, 2), Point(0, 2), Point(1, 2), Point(1, 0), Point(3, 0), Point(2, 0), Point(2, 1), Point(3, 1), Point(2, 1), Point(2, 3), Point(3, 3), Point(3, 2)};
+//Point points[] = {Point(0, 1), Point(1, 1), Point(1, 0), Point(3, 0), Point(2, 0), Point(2, 1), Point(3, 1), Point(2, 1), Point(2, 3), Point(3, 3), Point(3, 2)};
+//Point points[] = {Point(0, 0), Point(0, 3), Point(0, 0), Point(3, 0), Point(3, 1), Point(2, 1), Point(3, 1), Point(3, 3), Point(3, 2), Point(1, 2), Point(1, 3), Point(2, 3)};
+Point points[] = {Point(1, 0)};
+
+const int points_len = sizeof(points)/sizeof(points[0]);
+Point starting_point = Point(1, 0);
+bool button_pressed = false;
+
+int straight_speed = 63;
+std::vector<Instruction> kInstructionsBuffer = getPath(points, points_len, starting_point, 0, 87, straight_speed);
+int kNumInstructions = kInstructionsBuffer.size();
+Instruction* kInstructions = kInstructionsBuffer.data();
+
+
+
+
+void setup()
+{ 
+  Serial.begin(57600);
+  //Serial.begin(9600);
+  Serial.print("Is working: ");
+  return;
+  Wire.begin();
+  // compass.init();
+  //compass.setCalibration(-1701, 1307, -1743, 1027, -1305, 1391);
+  // compass.read();
+  delay(2000);
+  // while (gyro.wakeup() == false)
+  // {
+  //   Serial.print(millis());
+  //   Serial.println("\tCould not connect to GY521");
+  //   delay(1000);
+  // }
+  Serial.print("Is working: ");
+  Serial.println(is_sensor_working());
+  setup_sensor(0, 0);
+
+
+  sensor.axe = 0;
+  sensor.aye = 0;
+  sensor.aze = 0;
+  sensor.gxe = 0;
+  sensor.gye = 0;
+  sensor.gze = 0;
+  
+
+
+  drivetrain = new Drivetrain();
+  Serial.println("Drivetrain initialized");
+  setup_motors();
+  //setup_instructions(kInstructions, kNumInstructions);
+}
+
+void loop()
+{
+  if (buttonPressed() && !button_pressed)
+  {
+    button_pressed = true;
+  }
+
+  if (button_pressed)
+  {
+
+    drivetrain->loop();
+    if (!drivetrain->is_moving())
+    {
+      if (cur_instruction >= kNumInstructions)
+      {
+        return;
+      }
+      if (cur_instruction != 0)
+      {
+        if (kInstructions[cur_instruction].movement == Drivetrain::BACKWARD && kInstructions[cur_instruction - 1].movement == Drivetrain::FORWARD)
+        {
+          //delay(350);
+        }
+      }
+      else
+      {
+        //delay(100);
+      }
+      drivetrain->Go(kInstructions[cur_instruction].slits, kInstructions[cur_instruction].movement, kInstructions[cur_instruction].speed_perc);
+      cur_instruction++;
+    }
+  }
+}
