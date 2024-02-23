@@ -49,7 +49,7 @@ public:
     Drivetrain()
     {
         memset(last_read_, 0, sizeof(last_read_));
-        memset(num_slits_left_, 0, sizeof(num_slits_left_));
+        memset(num_slits_left_, (volatile int)0, sizeof(num_slits_left_));
         memset(is_moving_, 0, sizeof(is_moving_));
         setup_sensor();
         angularPos = 0;
